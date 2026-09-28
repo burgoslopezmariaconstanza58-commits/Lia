@@ -3,75 +3,188 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lia - Nuestra Mascota 🐾</title>
+  <title>Nuestro Patito Virtual 🐥</title>
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #fce4ec;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(180deg, #e0f7fa 0%, #fff9c4 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       margin: 0;
+      overflow: hidden;
     }
     .card {
-      background: white;
-      padding: 24px;
-      border-radius: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 28px;
+      box-shadow: 0 12px 30px rgba(0, 150, 136, 0.15);
       text-align: center;
-      width: 280px;
+      width: 320px;
+      position: relative;
+      border: 3px solid #ffe082;
+    }
+    h2 { margin: 0 0 10px; color: #f57f17; font-size: 22px; }
+    
+    /* Escenario y Patito */
+    .pet-stage {
+      height: 160px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e1f5fe;
+      border-radius: 20px;
+      margin-bottom: 15px;
+      overflow: hidden;
+      border: 2px dashed #81d4fa;
     }
     .pet-avatar {
-      font-size: 80px;
-      margin: 20px 0;
+      font-size: 85px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s ease;
+      animation: idleMove 2.5s infinite ease-in-out;
+    }
+
+    /* Animaciones */
+    @keyframes idleMove {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(3deg); }
+    }
+    .bath-anim { animation: waddle 0.5s infinite alternate !important; }
+    @keyframes waddle {
+      from { transform: rotate(-10deg) scale(1.1); }
+      to { transform: rotate(10deg) scale(1.1); }
+    }
+    .happy-anim { animation: happyJump 0.4s 3 ease !important; }
+    @keyframes happyJump {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px) scale(1.15); }
+    }
+
+    /* Efecto de burbujas/baño */
+    .bubbles {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      display: none;
+    }
+    .bubble {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.7);
+      border: 2px solid #29b6f6;
+      border-radius: 50%;
+      animation: rise 1.5s infinite linear;
+    }
+    @keyframes rise {
+      0% { bottom: -10px; opacity: 1; transform: translateX(0); }
+      100% { bottom: 100%; opacity: 0; transform: translateX(20px); }
+    }
+
+    /* Barras de Estado */
+    .stat-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: bold;
+      color: #455a64;
     }
     .stat-bar {
-      background: #eee;
+      background: #eceff1;
       border-radius: 10px;
-      height: 16px;
+      height: 12px;
+      width: 170px;
       overflow: hidden;
-      margin: 8px 0 16px;
+      border: 1px solid #cfd8dc;
     }
     .stat-fill {
-      background: #ff4081;
       height: 100%;
-      width: 0%;
-      transition: width 0.3s ease;
+      width: 50%;
+      transition: width 0.4s ease, background-color 0.4s;
+    }
+    #bath-bar { background-color: #29b6f6; }
+    #hunger-bar { background-color: #ffb300; }
+    #happy-bar { background-color: #ff4081; }
+
+    /* Botones de acción */
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
     .btn {
-      background: #ff4081;
+      background: #ffb300;
       color: white;
       border: none;
-      padding: 10px 18px;
-      border-radius: 12px;
+      padding: 10px;
+      border-radius: 14px;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 13px;
       cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.1s;
     }
+    .btn:active { transform: scale(0.95); }
+    .btn-bath { background: #29b6f6; }
+    .btn-happy { background: #ff4081; }
+    .btn-sleep { background: #7e57c2; }
   </style>
 </head>
 <body>
 
   <div class="card">
-    <h2>Mascota Lia 🐾</h2>
-    <div class="pet-avatar" id="pet-icon">🐶</div>
+    <h2>Lia el Patito 🐥</h2>
     
-    <label>Hambre: <span id="hunger-text">0</span>%</label>
-    <div class="stat-bar">
-      <div class="stat-fill" id="hunger-bar"></div>
+    <div class="pet-stage" id="stage">
+      <div class="bubbles" id="bubbles-container">
+        <div class="bubble" style="left: 20%; width: 15px; height: 15px; animation-delay: 0s;"></div>
+        <div class="bubble" style="left: 50%; width: 20px; height: 20px; animation-delay: 0.3s;"></div>
+        <div class="bubble" style="left: 70%; width: 12px; height: 12px; animation-delay: 0.6s;"></div>
+      </div>
+      <div class="pet-avatar" id="pet-icon">🐥</div>
+    </div>
+    
+    <div class="stat-group">
+      <div class="stat-row">
+        <span>🧼 Baño:</span>
+        <div class="stat-bar"><div class="stat-fill" id="bath-bar"></div></div>
+      </div>
+      <div class="stat-row">
+        <span>🌽 Hambre:</span>
+        <div class="stat-bar"><div class="stat-fill" id="hunger-bar"></div></div>
+      </div>
+      <div class="stat-row">
+        <span>💛 Alegría:</span>
+        <div class="stat-bar"><div class="stat-fill" id="happy-bar"></div></div>
+      </div>
     </div>
 
-    <button class="btn" id="feed-btn">Alimentar 🍎</button>
+    <div class="actions">
+      <button class="btn btn-bath" id="bath-btn">Bañar 🧼</button>
+      <button class="btn" id="feed-btn">Alimentar 🌽</button>
+      <button class="btn btn-happy" id="play-btn">Acariciar 💛</button>
+      <button class="btn btn-sleep" id="sleep-btn">Dormir 💤</button>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+    // Reemplaza con tus claves de Firebase
     const firebaseConfig = {
-      apiKey: "AiZaSyBIEBCzmr27YA5ZpqzSk9-5...", // Tu apiKey de Firebase
+      apiKey: "AiZaSyBIEBCzmr27YA5ZpqzSk9-5...",
       authDomain: "liaa-d690e.firebaseapp.com",
       projectId: "liaa-d690e",
       storageBucket: "liaa-d690e.appspot.com",
@@ -83,29 +196,90 @@
     const db = getDatabase(app);
     const petRef = ref(db, 'mascota');
 
+    // Elementos DOM
+    const petIcon = document.getElementById('pet-icon');
+    const bathBar = document.getElementById('bath-bar');
     const hungerBar = document.getElementById('hunger-bar');
-    const hungerText = document.getElementById('hunger-text');
-    const feedBtn = document.getElementById('feed-btn');
+    const happyBar = document.getElementById('happy-bar');
+    const bubbles = document.getElementById('bubbles-container');
 
-    let currentHunger = 50;
+    let state = { baño: 50, hambre: 50, alegria: 50, durmiendo: false };
 
+    // Sincronizar desde la nube en tiempo real
     onValue(petRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        currentHunger = data.hambre;
-        hungerBar.style.width = currentHunger + '%';
-        hungerText.textContent = currentHunger;
+        state = data;
+        updateUI();
       } else {
-        set(petRef, { hambre: 50 });
+        set(petRef, state);
       }
     });
 
-    feedBtn.addEventListener('click', () => {
-      if (currentHunger < 100) {
-        const newHunger = Math.min(currentHunger + 10, 100);
-        set(petRef, { hambre: newHunger });
+    function updateUI() {
+      bathBar.style.width = state.baño + '%';
+      hungerBar.style.width = state.hambre + '%';
+      happyBar.style.width = state.alegria + '%';
+
+      if (state.durmiendo) {
+        petIcon.textContent = "💤🐥";
+      } else if (state.baño < 30) {
+        petIcon.textContent = "🧼🐤"; // Necesita un baño
+      } else {
+        petIcon.textContent = "🐥";
       }
+    }
+
+    // Acción de Bañar
+    document.getElementById('bath-btn').addEventListener('click', () => {
+      bubbles.style.display = 'block';
+      petIcon.classList.add('bath-anim');
+      petIcon.textContent = "🧼🐥";
+
+      setTimeout(() => {
+        bubbles.style.display = 'none';
+        petIcon.classList.remove('bath-anim');
+        state.baño = Math.min(state.baño + 25, 100);
+        state.alegria = Math.min(state.alegria + 10, 100);
+        state.durmiendo = false;
+        set(petRef, state);
+      }, 2000);
+    });
+
+    // Acción de Alimentar
+    document.getElementById('feed-btn').addEventListener('click', () => {
+      petIcon.classList.add('happy-anim');
+      petIcon.textContent = "🌽🐥";
+      setTimeout(() => petIcon.classList.remove('happy-anim'), 1200);
+
+      state.hambre = Math.min(state.hambre + 20, 100);
+      state.durmiendo = false;
+      set(petRef, state);
+    });
+
+    // Acción de Acariciar / Jugar
+    document.getElementById('play-btn').addEventListener('click', () => {
+      petIcon.classList.add('happy-anim');
+      petIcon.textContent = "🥰🐥";
+      setTimeout(() => petIcon.classList.remove('happy-anim'), 1200);
+
+      state.alegria = Math.min(state.alegria + 20, 100);
+      state.durmiendo = false;
+      set(petRef, state);
+    });
+
+    // Acción de Dormir
+    document.getElementById('sleep-btn').addEventListener('click', () => {
+      state.durmiendo = !state.durmiendo;
+      set(petRef, state);
+    });
+
+    // Tocar al patito directamente
+    petIcon.addEventListener('click', () => {
+      petIcon.classList.add('happy-anim');
+      setTimeout(() => petIcon.classList.remove('happy-anim'), 800);
     });
   </script>
 </body>
-</html>
+  </html>
+        
