@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lia - Nuestra Mascota 🐾</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fce4ec;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 280px;
+    }
+    .pet-avatar {
+      font-size: 80px;
+      margin: 20px 0;
+    }
+    .stat-bar {
+      background: #eee;
+      border-radius: 10px;
+      height: 16px;
+      overflow: hidden;
+      margin: 8px 0 16px;
+    }
+    .stat-fill {
+      background: #ff4081;
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .btn {
+      background: #ff4081;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Mascota Lia 🐾</h2>
+    <div class="pet-avatar" id="pet-icon">🐶</div>
+    
+    <label>Hambre: <span id="hunger-text">0</span>%</label>
+    <div class="stat-bar">
+      <div class="stat-fill" id="hunger-bar"></div>
+    </div>
+
+    <button class="btn" id="feed-btn">Alimentar 🍎</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AiZaSyBIEBCzmr27YA5ZpqzSk9-5...", // Tu apiKey de Firebase
+      authDomain: "liaa-d690e.firebaseapp.com",
+      projectId: "liaa-d690e",
+      storageBucket: "liaa-d690e.appspot.com",
+      messagingSenderId: "874390953254",
+      appId: "1:874390953254:web:633f46865d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const petRef = ref(db, 'mascota');
+
+    const hungerBar = document.getElementById('hunger-bar');
+    const hungerText = document.getElementById('hunger-text');
+    const feedBtn = document.getElementById('feed-btn');
+
+    let currentHunger = 50;
+
+    onValue(petRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        currentHunger = data.hambre;
+        hungerBar.style.width = currentHunger + '%';
+        hungerText.textContent = currentHunger;
+      } else {
+        set(petRef, { hambre: 50 });
+      }
+    });
+
+    feedBtn.addEventListener('click', () => {
+      if (currentHunger < 100) {
+        const newHunger = Math.min(currentHunger + 10, 100);
+        set(petRef, { hambre: newHunger });
+      }
+    });
+  </script>
+</body>
+</html>
